@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.swervedrive.Vision;
 import java.io.File;
@@ -40,6 +41,9 @@ public class RobotContainer
 
   // Vision subsystem for AprilTag tracking
   private final Vision vision;
+
+  // Shooter subsystem
+  private final Shooter shooter = new Shooter();
 
   // CTRE Pneumatics Control Module (PCM)
  Compressor comp = new Compressor(38, PneumaticsModuleType.CTREPCM);
@@ -131,10 +135,12 @@ public class RobotContainer
     driverController.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
     driverController.y().whileTrue(drivebase.driveForward());
     
+    // Right bumper - Run shooter while held, stop when released
+    driverController.rightBumper().whileTrue(shooter.runShooterCommand(1.0));
+
     // Additional button bindings (customize as needed)
     driverController.start().whileTrue(Commands.none());
     driverController.back().whileTrue(Commands.none());
-    driverController.rightBumper().onTrue(Commands.none());
   }
 
   /**
